@@ -67,6 +67,14 @@ export default function Ballot(){
         const choice = selection[position]
         await api.submitVote({ voterId, choice, position, timestamp: Date.now() })
       }
+      // Save selections to localStorage for receipt display
+      localStorage.setItem('votedSelections', JSON.stringify(selection))
+      localStorage.setItem('votedCandidates', JSON.stringify(
+        Object.entries(selection).map(([pos, candId]) => {
+          const candidate = candidates.find(c => c._id === candId)
+          return { position: pos, candidateId: candId, candidateName: candidate?.name, candidateImage: candidate?.imageUrl }
+        })
+      ))
       navigate('/vote/receipt')
     } catch (err){
       alert('Failed to submit votes')
