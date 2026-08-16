@@ -1,4 +1,5 @@
 import './App.css'
+import { useEffect } from 'react'
 import { BrowserRouter, Routes, Route } from 'react-router-dom'
 import Home from './pages/Home'
 import Candidates from './pages/Candidates'
@@ -17,9 +18,14 @@ import Logout from './pages/Logout'
 import SessionExpired from './pages/SessionExpired'
 import Unauthorized from './pages/Unauthorized'
 import VoterLayout from './layouts/VoterLayout'
-
+import { clearInvalidToken } from './lib/auth'
 
 function App() {
+  useEffect(() => {
+    // Clear expired or invalid tokens on app load
+    clearInvalidToken()
+  }, [])
+
   return (
     <BrowserRouter>
       <main>
