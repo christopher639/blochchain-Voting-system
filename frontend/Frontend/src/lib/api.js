@@ -1,4 +1,4 @@
-const BACKEND = import.meta.env.VITE_BACKEND_URL || 'http://localhost:4000'
+const BACKEND = import.meta.env.VITE_BACKEND_URL || 'https://blockchainvms-backend.onrender.com'
 const API_BASE = BACKEND.replace(/\/$/, '')
 
 function normalizeCandidate(candidate){

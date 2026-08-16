@@ -21,7 +21,7 @@ export default function ResetPassword(){
     if (password !== confirm) return setError('Passwords do not match.')
     setLoading(true)
     try{
-      await fetch(`${import.meta.env.VITE_BACKEND_URL || 'http://localhost:4000'}/api/auth/reset`, { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify({ token, password }) })
+      await fetch(`${import.meta.env.VITE_BACKEND_URL || 'https://blockchainvms-backend.onrender.com'}/api/auth/reset`, { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify({ token, password }) })
       setMessage('Password reset successful. You may now log in.')
     }catch(err){ setError('Failed to reset password.') }
     finally{ setLoading(false) }

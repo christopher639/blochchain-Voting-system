@@ -37,7 +37,7 @@ export default function ManagePositions(){
       await api.createPosition({})
       // PUT endpoint exists; use fetch directly
       const token = localStorage.getItem('token')
-      const res = await fetch((import.meta.env.VITE_BACKEND_URL||'http://localhost:4000')+`/api/positions/${id}`, { method: 'PUT', headers: { 'Content-Type':'application/json', ...(token?{ Authorization: `Bearer ${token}` }: {}) }, body: JSON.stringify({ active: !current }) })
+      const res = await fetch((import.meta.env.VITE_BACKEND_URL||'https://blockchainvms-backend.onrender.com')+`/api/positions/${id}`, { method: 'PUT', headers: { 'Content-Type':'application/json', ...(token?{ Authorization: `Bearer ${token}` }: {}) }, body: JSON.stringify({ active: !current }) })
       const data = await res.json()
       if (data.error) alert(data.error)
       load()
@@ -48,7 +48,7 @@ export default function ManagePositions(){
     if (!confirm('Delete this position? This cannot be undone if candidates are removed.')) return
     try{
       const token = localStorage.getItem('token')
-      const res = await fetch((import.meta.env.VITE_BACKEND_URL||'http://localhost:4000')+`/api/positions/${id}`, { method: 'DELETE', headers: { ...(token?{ Authorization: `Bearer ${token}` }: {}) } })
+      const res = await fetch((import.meta.env.VITE_BACKEND_URL||'https://blockchainvms-backend.onrender.com')+`/api/positions/${id}`, { method: 'DELETE', headers: { ...(token?{ Authorization: `Bearer ${token}` }: {}) } })
       const data = await res.json()
       if (data.error) alert(data.error)
       load()

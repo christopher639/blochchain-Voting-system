@@ -17,7 +17,7 @@ export default function ForgotPassword(){
     if (!email || !email.includes('@')) return setError('Please enter a valid university email.')
     try{
       // attempt endpoint if present
-      await fetch(`${import.meta.env.VITE_BACKEND_URL || 'http://localhost:4000'}/api/auth/forgot`, { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify({ email }) })
+      await fetch(`${import.meta.env.VITE_BACKEND_URL || 'https://blockchainvms-backend.onrender.com'}/api/auth/forgot`, { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify({ email }) })
       setMessage('If an account exists, a password reset link has been sent to your email.')
     }catch(err){
       setError('Failed to request password reset. Try again later.')

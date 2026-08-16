@@ -14,7 +14,7 @@ export default function VerifyAccount(){
     if (!token) return setStatus('missing')
     async function verify(){
       try{
-        await fetch(`${import.meta.env.VITE_BACKEND_URL || 'http://localhost:4000'}/api/auth/verify`, { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ token }) })
+        await fetch(`${import.meta.env.VITE_BACKEND_URL || 'https://blockchainvms-backend.onrender.com'}/api/auth/verify`, { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ token }) })
         setStatus('ok')
       }catch(err){ setError('Verification failed'); setStatus('error') }
     }
