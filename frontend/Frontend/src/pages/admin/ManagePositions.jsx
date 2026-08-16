@@ -1,19 +1,25 @@
 import { useState, useEffect } from 'react'
 import api from '../../lib/api'
+import LoadingSpinner from '../../components/auth/LoadingSpinner'
 
 export default function ManagePositions(){
   const [showModal, setShowModal] = useState(false)
   const [positions, setPositions] = useState([])
-  const [loading, setLoading] = useState(false)
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState(null)
   const [form, setForm] = useState({ name: '', description: '', displayOrder: 0, active: true })
 
   useEffect(()=>{ load() }, [])
   async function load(){
     setLoading(true)
+    setError(null)
     try{
       const items = await api.fetchPositions()
       setPositions(items || [])
-    }finally{ setLoading(false) }
+    } catch (err) {
+      console.error('Failed to load positions:', err)
+      setError('Failed to load positions')
+    } finally { setLoading(false) }
   }
 
   async function save(){
@@ -63,7 +69,17 @@ export default function ManagePositions(){
       </div>
 
       <div className="mt-4 bg-white p-4 rounded shadow">
-        {loading ? <div>Loading...</div> : (
+        {loading ? (
+          <div className="p-12 flex flex-col items-center justify-center gap-4">
+            <LoadingSpinner size={40} />
+            <p className="text-gray-600">Loading positions...</p>
+          </div>
+        ) : error ? (
+          <div className="p-4 bg-red-50 text-red-700 rounded border border-red-200">
+            <p className="mb-3">{error}</p>
+            <button onClick={load} className="px-4 py-2 bg-red-600 text-white rounded">Retry</button>
+          </div>
+        ) : (
           <table className="w-full text-sm">
             <thead className="text-left text-xs text-gray-500">
               <tr><th>Name</th><th># Candidates</th><th>Status</th><th>Actions</th></tr>

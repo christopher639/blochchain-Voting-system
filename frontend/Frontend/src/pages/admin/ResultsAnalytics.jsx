@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { fetchVotes, fetchCandidates } from '../../lib/api'
 import Sparkline from '../../components/Sparkline'
+import LoadingSpinner from '../../components/auth/LoadingSpinner'
 
 function BarChart({ buckets = [], labels = [] }){
   const max = Math.max(...buckets, 1)
@@ -48,6 +49,7 @@ export default function ResultsAnalytics(){
 
   useEffect(()=>{
     setLoading(true)
+    setError(null)
     Promise.all([fetchVotes(), fetchCandidates()])
       .then(([v,c])=>{
         setVotes(v)
@@ -100,9 +102,28 @@ export default function ResultsAnalytics(){
         </div>
 
         {loading ? (
-          <div className="p-6 text-center text-gray-500">Loading results…</div>
+          <div className="p-12 flex flex-col items-center justify-center gap-4">
+            <LoadingSpinner size={40} />
+            <p className="text-gray-600">Loading results...</p>
+          </div>
         ) : error ? (
-          <div className="p-6 text-center text-red-600">{error}</div>
+          <div className="p-4 bg-red-50 text-red-700 rounded border border-red-200">
+            <p className="mb-3">{error}</p>
+            <button onClick={() => {
+              setLoading(true)
+              setError(null)
+              Promise.all([fetchVotes(), fetchCandidates()])
+                .then(([v,c])=>{
+                  setVotes(v)
+                  setCandidates(c)
+                })
+                .catch(err=>{
+                  console.error('Results load error', err)
+                  setError('Unable to load results')
+                })
+                .finally(()=>setLoading(false))
+            }} className="px-4 py-2 bg-red-600 text-white rounded">Retry</button>
+          </div>
         ) : (
           <div className="mt-4 grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="bg-slate-50 p-4 rounded">
