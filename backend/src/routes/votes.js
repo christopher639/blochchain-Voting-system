@@ -22,4 +22,17 @@ router.get('/', async (req, res) => {
   res.json(votes);
 });
 
+// Check if a voter has voted
+router.get('/check/:voterId', async (req, res) => {
+  const { voterId } = req.params;
+  try {
+    const votes = await Vote.find({ voterId });
+    const hasVoted = votes && votes.length > 0;
+    res.json({ hasVoted, voteCount: votes?.length || 0 });
+  } catch (err) {
+    console.error('Error checking voting status:', err);
+    res.status(500).json({ error: 'Failed to check voting status' });
+  }
+});
+
 module.exports = router;

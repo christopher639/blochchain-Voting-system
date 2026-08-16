@@ -6,7 +6,8 @@ import PasswordInput from '../components/auth/PasswordInput'
 import Button from '../components/auth/Button'
 import Alert from '../components/auth/Alert'
 import LoadingSpinner from '../components/auth/LoadingSpinner'
-import { login } from '../lib/api'
+import { login, checkVotingStatus } from '../lib/api'
+import { parseJwt } from '../lib/auth'
 
 export default function Login(){
   const [identifier, setIdentifier] = useState('')
@@ -28,9 +29,32 @@ export default function Login(){
         localStorage.setItem('token', res.token)
         localStorage.setItem('username', res.user?.name || identifier)
         if (remember) localStorage.setItem('remember', '1')
-        const post = localStorage.getItem('postLogin')
-        localStorage.removeItem('postLogin')
+        
         const role = res.user?.role
+        const post = localStorage.getItem('postLogin')
+        
+        // If going to vote, check if already voted
+        if (post === 'vote' && role === 'voter') {
+          try {
+            const parsed = parseJwt(res.token)
+            const voterId = parsed?.id || res.user?._id
+            const voteStatus = await checkVotingStatus(voterId)
+            
+            if (voteStatus?.hasVoted) {
+              localStorage.removeItem('postLogin')
+              setError('You have already voted. You can only vote once.')
+              localStorage.removeItem('token')
+              localStorage.removeItem('username')
+              setLoading(false)
+              return
+            }
+          } catch (err) {
+            console.error('Failed to check voting status:', err)
+          }
+        }
+        
+        localStorage.removeItem('postLogin')
+        
         // success message briefly then redirect
         setTimeout(()=>{
           if (post === 'vote' && role === 'voter') navigate('/vote/ballot')

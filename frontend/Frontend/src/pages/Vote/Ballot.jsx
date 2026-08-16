@@ -12,13 +12,29 @@ export default function Ballot(){
   const [submitting, setSubmitting] = useState(false)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
+  const [alreadyVoted, setAlreadyVoted] = useState(false)
   const navigate = useNavigate()
 
   useEffect(()=>{ load() },[])
+  
   async function load(){
     setLoading(true)
     setError(null)
+    
     try {
+      // First check if voter has already voted
+      const token = localStorage.getItem('token')
+      const parsed = parseJwt(token)
+      const voterId = parsed?.id || localStorage.getItem('username')
+      
+      const voteStatus = await api.checkVotingStatus(voterId)
+      if (voteStatus?.hasVoted) {
+        setAlreadyVoted(true)
+        setLoading(false)
+        return
+      }
+      
+      // If not voted, load ballot
       const items = await api.fetchCandidates()
       const normalized = items || []
       setCandidates(normalized)
@@ -55,6 +71,22 @@ export default function Ballot(){
     } catch (err){
       alert('Failed to submit votes')
     } finally { setSubmitting(false) }
+  }
+
+  if (alreadyVoted) {
+    return (
+      <div className="container py-8">
+        <div className="card p-8 text-center">
+          <div className="text-4xl mb-4">✓</div>
+          <h2 className="text-2xl font-semibold text-green-700 mb-2">You have already voted</h2>
+          <p className="text-gray-600 mb-6">Your vote has been recorded. Each voter can only vote once in this election.</p>
+          <div className="flex flex-col sm:flex-row gap-3 justify-center">
+            <button onClick={() => navigate('/')} className="btn btn-primary">Return to Home</button>
+            <button onClick={() => navigate('/vote/receipt')} className="btn btn-outline">View Receipt</button>
+          </div>
+        </div>
+      </div>
+    )
   }
 
   if (loading) {

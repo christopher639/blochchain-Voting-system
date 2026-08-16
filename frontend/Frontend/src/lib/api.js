@@ -44,6 +44,14 @@ async function submitVote(vote){
   return res.json()
 }
 
+async function checkVotingStatus(voterId){
+  const token = localStorage.getItem('token')
+  const res = await fetch(`${BACKEND}/api/votes/check/${voterId}`, {
+    headers: { ...(token?{ Authorization: `Bearer ${token}` }: {}) }
+  })
+  return res.json()
+}
+
 async function fetchVotes(){ const res = await fetch(`${BACKEND}/api/votes`); return res.json() }
 async function fetchCandidates(){ const res = await fetch(`${BACKEND}/api/candidates`); const items = await res.json(); return (items || []).map(normalizeCandidate) }
 async function fetchPositions(){ const res = await fetch(`${BACKEND}/api/positions`); return res.json() }
@@ -65,6 +73,6 @@ async function login(username, password){ const res = await fetch(`${BACKEND}/ap
 
 async function createCandidate(formData){ const token = localStorage.getItem('token'); const res = await fetch(`${BACKEND}/api/candidates`, { method: 'POST', headers: { ...(token?{ Authorization: `Bearer ${token}` }: {}) }, body: formData }); return res.json() }
 
-export { submitVote, fetchVotes, fetchCandidates, fetchPositions, createPosition, fetchVoters, fetchPendingVoters, approveVoter, rejectVoter, registerVoter, updateCandidate, deleteCandidate, fetchStats, register, login, createCandidate }
+export { submitVote, checkVotingStatus, fetchVotes, fetchCandidates, fetchPositions, createPosition, fetchVoters, fetchPendingVoters, approveVoter, rejectVoter, registerVoter, updateCandidate, deleteCandidate, fetchStats, register, login, createCandidate }
 
-export default { submitVote, fetchVotes, fetchCandidates, fetchPositions, createPosition, fetchVoters, fetchPendingVoters, approveVoter, rejectVoter, registerVoter, updateCandidate, deleteCandidate, fetchStats, register, login, createCandidate }
+export default { submitVote, checkVotingStatus, fetchVotes, fetchCandidates, fetchPositions, createPosition, fetchVoters, fetchPendingVoters, approveVoter, rejectVoter, registerVoter, updateCandidate, deleteCandidate, fetchStats, register, login, createCandidate }
