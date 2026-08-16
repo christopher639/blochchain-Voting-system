@@ -1,0 +1,41 @@
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root{
+	--bg:#f6f8fb;
+	--card:#ffffff;
+	--muted:#6b7280;
+	--accent:#2563eb;
+	--accent-600:#1e40af;
+	--border:#e6eef8;
+	--success:#10b981;
+}
+
+/* Fallback variables / local overrides */
+html,body,#root{height:100%}
+body{font-family:Inter,system-ui,Arial,sans-serif;background:var(--bg);color:#0f172a;margin:0;}
+.container{max-width:72rem;margin-left:auto;margin-right:auto;padding:1.25rem}
+
+/* Common card */
+.card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:1rem}
+.muted{color:var(--muted)}
+.btn{display:inline-flex;align-items:center;gap:8px;padding:0.5rem 0.75rem;border-radius:8px;border:1px solid transparent}
+.btn-primary{background:var(--accent);color:white}
+.btn-outline{background:transparent;border-color:var(--border);color:#0f172a}
+
+.brand-name{font-weight:700}
+
+/* Auth-specific */
+.auth-illustration{width:100%;height:auto}
+.rounded-md{border-radius:8px}
+.focus-ring:focus{outline:none;box-shadow:0 0 0 4px rgba(37,99,235,0.08)}
+
+/* Reduce card radius for a more professional feel */
+.card{border-radius:8px}
+
+/* Keep UI flat: avoid shadows */
+.no-shadow{box-shadow:none}
+
+
