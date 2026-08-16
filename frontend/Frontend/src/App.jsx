@@ -19,6 +19,35 @@ import SessionExpired from './pages/SessionExpired'
 import Unauthorized from './pages/Unauthorized'
 import VoterLayout from './layouts/VoterLayout'
 import { clearInvalidToken } from './lib/auth'
+import useActivityTimeout from './lib/useActivityTimeout'
+
+function AppContent() {
+  // Monitor activity and logout after 10 seconds of inactivity
+  useActivityTimeout()
+
+  return (
+    <main>
+      <Routes>
+        <Route path="/" element={<RequireVoter><VoterLayout><Home /></VoterLayout></RequireVoter>} />
+        <Route path="/login" element={<Login />} />
+        <Route path="/register" element={<Register />} />
+        <Route path="/auth/forgot" element={<ForgotPassword />} />
+        <Route path="/auth/reset" element={<ResetPassword />} />
+        <Route path="/auth/verify" element={<VerifyAccount />} />
+        <Route path="/auth/logout" element={<Logout />} />
+        <Route path="/auth/session-expired" element={<SessionExpired />} />
+        <Route path="/auth/unauthorized" element={<Unauthorized />} />
+
+        <Route path="/positions" element={<VoterLayout><Candidates/></VoterLayout>} />
+        <Route path="/vote/verify" element={<VoterLayout><Verify /></VoterLayout>} />
+        <Route path="/vote/ballot" element={<RequireVoter><VoterLayout><Ballot /></VoterLayout></RequireVoter>} />
+        <Route path="/vote/receipt" element={<RequireVoter><VoterLayout><Receipt /></VoterLayout></RequireVoter>} />
+
+        <Route path="/dashboard/*" element={<RequireAdmin><Dashboard/></RequireAdmin>} />
+      </Routes>
+    </main>
+  )
+}
 
 function App() {
   useEffect(() => {
@@ -28,28 +57,7 @@ function App() {
 
   return (
     <BrowserRouter>
-      <main>
-        <Routes>
-          <Route path="/" element={<RequireVoter><VoterLayout><Home /></VoterLayout></RequireVoter>} />
-          <Route path="/login" element={<Login />} />
-          <Route path="/register" element={<Register />} />
-          <Route path="/auth/forgot" element={<ForgotPassword />} />
-          <Route path="/auth/reset" element={<ResetPassword />} />
-          <Route path="/auth/verify" element={<VerifyAccount />} />
-          <Route path="/auth/logout" element={<Logout />} />
-          <Route path="/auth/session-expired" element={<SessionExpired />} />
-          <Route path="/auth/unauthorized" element={<Unauthorized />} />
-
-          <Route path="/positions" element={<VoterLayout><Candidates/></VoterLayout>} />
-          <Route path="/vote/verify" element={<VoterLayout><Verify /></VoterLayout>} />
-          <Route path="/vote/ballot" element={<RequireVoter><VoterLayout><Ballot /></VoterLayout></RequireVoter>} />
-          <Route path="/vote/receipt" element={<RequireVoter><VoterLayout><Receipt /></VoterLayout></RequireVoter>} />
-
-          <Route path="/dashboard/*" element={<RequireAdmin><Dashboard/></RequireAdmin>} />
-        </Routes>
-      </main>
+      <AppContent />
     </BrowserRouter>
   )
 }
-
-export default App
