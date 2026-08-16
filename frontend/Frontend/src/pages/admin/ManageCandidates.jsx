@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import api from '../../lib/api'
+import LoadingSpinner from '../../components/auth/LoadingSpinner'
 
 export default function ManageCandidates(){
   const [showForm, setShowForm] = useState(false)
@@ -10,19 +11,29 @@ export default function ManageCandidates(){
   const [runningMateFile, setRunningMateFile] = useState(null)
   const [runningMatePreview, setRunningMatePreview] = useState(null)
   const [positions, setPositions] = useState([])
-  const [loading, setLoading] = useState(false)
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState(null)
+  const [formLoading, setFormLoading] = useState(false)
 
   useEffect(()=>{ load() }, [])
   async function load(){
-    const items = await api.fetchCandidates()
-    setCandidates(items || [])
-    const pos = await api.fetchPositions()
-    setPositions(pos || [])
+    setLoading(true)
+    setError(null)
+    try {
+      const [items, pos] = await Promise.all([api.fetchCandidates(), api.fetchPositions()])
+      setCandidates(items || [])
+      setPositions(pos || [])
+    } catch (err) {
+      console.error('Failed to load candidates:', err)
+      setError('Failed to load data. Please try again.')
+    } finally {
+      setLoading(false)
+    }
   }
 
   async function handleSubmit(e){
     e.preventDefault()
-    setLoading(true)
+    setFormLoading(true)
     try{
       const fd = new FormData()
       fd.append('name', form.name)
@@ -42,7 +53,7 @@ export default function ManageCandidates(){
       } else {
         alert(res.error || 'Failed to create')
       }
-    } finally { setLoading(false) }
+    } finally { setFormLoading(false) }
   }
 
   function onFileChange(e){
@@ -65,6 +76,24 @@ export default function ManageCandidates(){
 
   function removeImage(){ setImageFile(null); setPreviewUrl(null) }
   function removeRunningMateImage(){ setRunningMateFile(null); setRunningMatePreview(null) }
+
+  if (loading) {
+    return (
+      <div className="flex flex-col items-center justify-center p-12 gap-4">
+        <LoadingSpinner size={40} />
+        <p className="text-gray-600">Loading candidates...</p>
+      </div>
+    )
+  }
+
+  if (error) {
+    return (
+      <div className="p-6 border border-red-200 bg-red-50 rounded">
+        <p className="text-red-700 mb-4">{error}</p>
+        <button onClick={load} className="px-4 py-2 bg-red-600 text-white rounded">Retry</button>
+      </div>
+    )
+  }
 
   return (
     <div>
@@ -140,7 +169,7 @@ export default function ManageCandidates(){
               </div>
               <div className="flex justify-end gap-2 pt-2">
                 <button type="button" onClick={()=>setShowForm(false)} className="px-3 py-2 rounded border">Cancel</button>
-                <button className="px-3 py-2 bg-blue-600 text-white rounded" disabled={loading}>{loading ? 'Saving...' : 'Save'}</button>
+              <button className="px-3 py-2 bg-blue-600 text-white rounded" disabled={formLoading}>{formLoading ? 'Saving...' : 'Save'}</button>
               </div>
             </form>
           </div>

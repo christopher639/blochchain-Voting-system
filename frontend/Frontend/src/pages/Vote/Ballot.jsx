@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import api from '../../lib/api'
 import { parseJwt } from '../../lib/auth'
+import LoadingSpinner from '../../components/auth/LoadingSpinner'
 
 export default function Ballot(){
   const [candidates, setCandidates] = useState([])
@@ -9,16 +10,27 @@ export default function Ballot(){
   const [selection, setSelection] = useState({})
   const [showReview, setShowReview] = useState(false)
   const [submitting, setSubmitting] = useState(false)
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState(null)
   const navigate = useNavigate()
 
   useEffect(()=>{ load() },[])
   async function load(){
-    const items = await api.fetchCandidates()
-    const normalized = items || []
-    setCandidates(normalized)
+    setLoading(true)
+    setError(null)
+    try {
+      const items = await api.fetchCandidates()
+      const normalized = items || []
+      setCandidates(normalized)
 
-    const pos = Array.from(new Set(normalized.map(i => i.position?.name || i.position || 'Unassigned')))
-    setPositions(pos)
+      const pos = Array.from(new Set(normalized.map(i => i.position?.name || i.position || 'Unassigned')))
+      setPositions(pos)
+    } catch (err) {
+      console.error('Failed to load ballot:', err)
+      setError('Failed to load candidates. Please try again.')
+    } finally {
+      setLoading(false)
+    }
   }
 
   function select(position, candidateId){
@@ -39,11 +51,32 @@ export default function Ballot(){
         const choice = selection[position]
         await api.submitVote({ voterId, choice, position, timestamp: Date.now() })
       }
-      // show success and navigate to receipt
       navigate('/vote/receipt')
     } catch (err){
       alert('Failed to submit votes')
     } finally { setSubmitting(false) }
+  }
+
+  if (loading) {
+    return (
+      <div className="container py-8">
+        <div className="card p-12 flex flex-col items-center justify-center gap-4">
+          <LoadingSpinner size={40} />
+          <p className="text-gray-600">Loading ballot...</p>
+        </div>
+      </div>
+    )
+  }
+
+  if (error) {
+    return (
+      <div className="container py-8">
+        <div className="card p-6 border border-red-200 bg-red-50">
+          <p className="text-red-700 mb-4">{error}</p>
+          <button onClick={load} className="px-4 py-2 bg-red-600 text-white rounded">Retry</button>
+        </div>
+      </div>
+    )
   }
 
   return (

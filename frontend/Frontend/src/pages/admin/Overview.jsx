@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { fetchStats, fetchVotes, fetchCandidates } from '../../lib/api'
 import Sparkline from '../../components/Sparkline'
+import LoadingSpinner from '../../components/auth/LoadingSpinner'
 
 function StatCard({ title, value, hint }){
   return (
@@ -66,9 +67,29 @@ export default function AdminOverview(){
 
       <div className="mt-6">
         {loading ? (
-          <div className="p-4 bg-white rounded shadow">Loading overview…</div>
+          <div className="p-12 bg-white rounded shadow flex flex-col items-center justify-center gap-4">
+            <LoadingSpinner size={40} />
+            <p className="text-gray-600">Loading overview data...</p>
+          </div>
         ) : error ? (
-          <div className="p-4 bg-red-50 text-red-700 rounded shadow">{error}</div>
+          <div className="p-4 bg-red-50 text-red-700 rounded shadow border border-red-200">
+            <p className="mb-3">{error}</p>
+            <button onClick={() => {
+              setLoading(true)
+              setError(null)
+              Promise.all([fetchStats(), fetchVotes(), fetchCandidates()])
+                .then(([s,v,c])=>{
+                  setStats(s)
+                  setVotes(v)
+                  setCandidates(c)
+                })
+                .catch(err=>{
+                  console.error('Overview load error', err)
+                  setError('Failed to load overview data')
+                })
+                .finally(()=>setLoading(false))
+            }} className="px-4 py-2 bg-red-600 text-white rounded">Retry</button>
+          </div>
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
             <StatCard title="Positions" value={stats.positionsCount ?? '—'} />
