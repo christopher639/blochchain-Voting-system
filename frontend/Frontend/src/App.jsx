@@ -30,7 +30,7 @@ function App() {
     <BrowserRouter>
       <main>
         <Routes>
-          <Route path="/" element={<VoterLayout><Home /></VoterLayout>} />
+          <Route path="/" element={<RequireVoter><VoterLayout><Home /></VoterLayout></RequireVoter>} />
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
           <Route path="/auth/forgot" element={<ForgotPassword />} />
