@@ -1,4 +1,5 @@
 import { useNavigate } from 'react-router-dom'
+import LiveVoting from '../components/LiveVoting'
 
 export default function Home() {
   const navigate = useNavigate()
@@ -8,7 +9,7 @@ export default function Home() {
   }
 
   return (
-    <div className="container py-12">
+    <div className="container py-8">
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
         <div>
           <h1 className="text-3xl font-bold">University of Ghana — SRC Voting</h1>
@@ -36,6 +37,10 @@ export default function Home() {
             <div className="mt-4 text-sm muted">Quick, private, and secure voting experience designed for students.</div>
           </div>
         </div>
+      </div>
+
+      <div className="mt-12">
+        <LiveVoting />
       </div>
     </div>
   )

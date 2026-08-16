@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { fetchStats, fetchVotes, fetchCandidates } from '../../lib/api'
 import Sparkline from '../../components/Sparkline'
 import LoadingSpinner from '../../components/auth/LoadingSpinner'
+import LiveVoting from '../../components/LiveVoting'
 
 function StatCard({ title, value, hint }){
   return (
@@ -100,6 +101,9 @@ export default function AdminOverview(){
         )}
       </div>
       
+      <div className="mt-8">
+        <LiveVoting />
+      </div>
 
       <div className="mt-6 grid grid-cols-1 lg:grid-cols-3 gap-6">
         <div className="lg:col-span-2 bg-white p-4 rounded shadow">
